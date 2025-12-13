@@ -1,16 +1,74 @@
 <style>
-  /* Mobile-first styling */
+  /* --- 1. MODAL/POPUP STYLES (NEW) --- */
+  /* Backdrop covers the whole screen and makes it dark/dim */
+  .modal-backdrop {
+    display: none; /* Initially hidden */
+    position: fixed;
+    z-index: 1000; /* Ensure it's on top of everything */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7); /* Black with 70% opacity */
+    /* Use flexbox to center the content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* When the modal is open, this class is added to the backdrop */
+  .modal-backdrop.open {
+    display: flex; /* Show the modal */
+  }
+
+  /* Close button styling */
+  .close-button {
+    color: #aaaaaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute; /* Position relative to the #ticket-container */
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+
+  .close-button:hover,
+  .close-button:focus {
+    color: #da291c; /* South Africa Red for hover */
+  }
+
+  /* --- 2. ORIGINAL TICKET CONTAINER STYLES (MODIFIED) --- */
   #ticket-container {
+    /* Changed position to relative so the close button can be absolute inside it */
+    position: relative;
     max-width: 600px;
-    max-height: 550px;
-    margin: 20px auto;
+    margin: 0; /* Remove margin-auto because flexbox is centering it now */
     padding: 20px;
     border: 2px solid #00a3da; /* South Africa blue/sky blue */
     border-radius: 12px;
     background-color: #f7f9fc;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Slightly stronger shadow for pop-up effect */
+    /* Add animation for entry */
+    animation: fadeIn 0.3s ease-out;
   }
+
+  /* Animation for the pop-up effect */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Mobile-first styling */
+  /* ... rest of your original CSS */
   .ticket-heading {
     color: #00a3da;
     font-size: 1.5em;
@@ -58,36 +116,62 @@
   }
 </style>
 
-<div id="ticket-container">
-  <h1 class="ticket-heading">WIN BAFANA BAFANA TICKETS!!</h1>
-  <p class="share-prompt">16Dec2026- Dobsonville Stadium <br /></p>
-  <p class="share-prompt">
-    Share this unique link with 5 friends via WhatsApp to qualify for the draw!
-  </p>
+<div id="ticketModal" class="modal-backdrop">
+  <div id="ticket-container">
+    <span class="close-button" onclick="closeModal()">&times;</span>
 
-  <p>shared with 5 friends:</p>
-  <div class="counter-display"><span id="shareCount">0</span> / 5 Friends</div>
+    <h1 class="ticket-heading">WIN BAFANA BAFANA TICKETS!!</h1>
+    <p class="share-prompt">16/Dec/2026- Dobsonville Stadium <br /></p>
+    <p class="share-prompt">
+      Share this unique link with 5 friends via WhatsApp to qualify for the draw!
+    </p>
 
-  <button id="whatsapp-share" class="share-button" onclick="promptShare()">
-    1. Share on WhatsApp &rarr;
-  </button>
+    <p>shared with 5 friends:</p>
+    <div class="counter-display">
+      <span id="shareCount">0</span> / 5 Friends
+    </div>
 
-  <button id="claim-button" class="share-button" disabled>
-    2. Go to Job-Wise.co.za
-  </button>
+    <button id="whatsapp-share" class="share-button" onclick="promptShare()">
+      1. Share on WhatsApp &rarr;
+    </button>
+
+    <button id="claim-button" class="share-button" disabled>
+      2. Go to Job-Wise.co.za
+    </button>
+  </div>
 </div>
 
+<button onclick="openModal()">Open Bafana Bafana Ticket Promo</button>
+
 <script>
-  // --- CONFIGURATION ---
+  // --- MODAL CONTROL FUNCTIONS (NEW) ---
+  const modal = document.getElementById("ticketModal");
+
+  // Function to open the modal
+  function openModal() {
+    modal.classList.add("open");
+  }
+
+  // Function to close the modal
+  function closeModal() {
+    modal.classList.remove("open");
+  }
+
+  // Close the modal if the user clicks anywhere outside of the ticket-container
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      closeModal();
+    }
+  };
+
+  // --- ORIGINAL SCRIPT (Updated to call close modal if successful) ---
   const TARGET_URL = "https://job-wise.co.za/";
-  // This is the message that will be shared by the user
   const SHARE_MESSAGE =
     "I found a way to win FREE Bafana Bafana vs. Ghana tickets on 16 Dec! You also need to check out this : " +
     window.location.href;
 
   const MIN_SHARES_REQUIRED = 5;
 
-  // Use localStorage to remember the user's progress
   let shareCount = parseInt(localStorage.getItem("jobWiseShareCount")) || 0;
 
   const countElement = document.getElementById("shareCount");
@@ -96,7 +180,6 @@
   function updateDisplay() {
     countElement.textContent = shareCount;
 
-    // Activate the button if the minimum is met
     if (shareCount >= MIN_SHARES_REQUIRED) {
       claimButton.classList.add("active");
       claimButton.disabled = false;
@@ -107,17 +190,12 @@
   }
 
   function promptShare() {
-    // Step 1: Open WhatsApp share link
-    // Use the whatsapp://send scheme for optimal mobile experience
     const whatsappUrl =
       "whatsapp://send?text=" + encodeURIComponent(SHARE_MESSAGE);
 
-    // This opens WhatsApp on mobile or WhatsApp Web on desktop
     window.open(whatsappUrl, "_blank");
 
-    // Step 2: Increment the counter after a successful share *attempt*
-    // This is the 'Honor System' part
-    shareCount = Math.min(shareCount + 1, MIN_SHARES_REQUIRED); // Cap at 5
+    shareCount = Math.min(shareCount + 1, MIN_SHARES_REQUIRED);
     localStorage.setItem("jobWiseShareCount", shareCount);
 
     updateDisplay();
@@ -133,9 +211,9 @@
 
   function redirectToJobWise() {
     if (shareCount >= MIN_SHARES_REQUIRED) {
-      // Optional: Clear the counter after claiming
-      // localStorage.removeItem('jobWiseShareCount');
-      window.location.href = TARGET_URL; // Redirect to job-wise.co.za
+      // **NEW**: Close the modal before redirecting
+      closeModal();
+      window.location.href = TARGET_URL;
     } else {
       alert(
         `You must share with at least ${MIN_SHARES_REQUIRED} friends first! You are currently at ${shareCount}.`
@@ -143,15 +221,7 @@
     }
   }
 
-  // Attach the redirect function to the claim button
   claimButton.onclick = redirectToJobWise;
 
-  // Initial load
   updateDisplay();
 </script>
-
-
-
-
-
-
