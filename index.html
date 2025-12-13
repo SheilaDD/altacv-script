@@ -1,0 +1,150 @@
+<style>
+  /* Mobile-first styling */
+  #ticket-container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 2px solid #00a3da; /* South Africa blue/sky blue */
+    border-radius: 12px;
+    background-color: #f7f9fc;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .ticket-heading {
+    color: #00a3da;
+    font-size: 1.5em;
+    margin-bottom: 5px;
+  }
+  .share-prompt {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  .counter-display {
+    font-size: 2em;
+    color: #da291c; /* South Africa red */
+    margin: 15px 0;
+  }
+  .share-button {
+    display: block;
+    width: 90%;
+    padding: 15px;
+    margin: 10px auto;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #whatsapp-share {
+    background-color: #25d366; /* WhatsApp Green */
+    color: white;
+  }
+  #whatsapp-share:hover {
+    background-color: #1da851;
+  }
+  #claim-button {
+    background-color: #ffb612; /* Bafana Bafana Yellow/Gold */
+    color: #333;
+    font-weight: bold;
+    opacity: 0.5; /* Disabled look */
+    pointer-events: none; /* Make it unclickable */
+  }
+  #claim-button.active {
+    opacity: 1;
+    pointer-events: auto;
+    background-color: #ffc72c;
+  }
+</style>
+
+<div id="ticket-container">
+  <h1 class="ticket-heading">WIN BAFANA BAFANA TICKETS!!</h1>
+  <p class="share-prompt">16Dec2026- Dobsonville Stadium <br /></p>
+  <p class="share-prompt">
+    Share this unique link with 5 friends via WhatsApp to qualify for the draw!
+  </p>
+
+  <p>shared with 5 friends:</p>
+  <div class="counter-display"><span id="shareCount">0</span> / 5 Friends</div>
+
+  <button id="whatsapp-share" class="share-button" onclick="promptShare()">
+    1. Share on WhatsApp &rarr;
+  </button>
+
+  <button id="claim-button" class="share-button" disabled>
+    2. Go to Job-Wise.co.za
+  </button>
+</div>
+
+<script>
+  // --- CONFIGURATION ---
+  const TARGET_URL = "https://job-wise.co.za/";
+  // This is the message that will be shared by the user
+  const SHARE_MESSAGE =
+    "I found a way to win FREE Bafana Bafana vs. Ghana tickets on 16 Dec! You also need to check out this awesome job site: " +
+    window.location.href;
+
+  const MIN_SHARES_REQUIRED = 5;
+
+  // Use localStorage to remember the user's progress
+  let shareCount = parseInt(localStorage.getItem("jobWiseShareCount")) || 0;
+
+  const countElement = document.getElementById("shareCount");
+  const claimButton = document.getElementById("claim-button");
+
+  function updateDisplay() {
+    countElement.textContent = shareCount;
+
+    // Activate the button if the minimum is met
+    if (shareCount >= MIN_SHARES_REQUIRED) {
+      claimButton.classList.add("active");
+      claimButton.disabled = false;
+    } else {
+      claimButton.classList.remove("active");
+      claimButton.disabled = true;
+    }
+  }
+
+  function promptShare() {
+    // Step 1: Open WhatsApp share link
+    // Use the whatsapp://send scheme for optimal mobile experience
+    const whatsappUrl =
+      "whatsapp://send?text=" + encodeURIComponent(SHARE_MESSAGE);
+
+    // This opens WhatsApp on mobile or WhatsApp Web on desktop
+    window.open(whatsappUrl, "_blank");
+
+    // Step 2: Increment the counter after a successful share *attempt*
+    // This is the 'Honor System' part
+    shareCount = Math.min(shareCount + 1, MIN_SHARES_REQUIRED); // Cap at 5
+    localStorage.setItem("jobWiseShareCount", shareCount);
+
+    updateDisplay();
+
+    if (shareCount < MIN_SHARES_REQUIRED) {
+      alert(
+        `Great! Share with ${
+          MIN_SHARES_REQUIRED - shareCount
+        } more friends to unlock the draw!`
+      );
+    }
+  }
+
+  function redirectToJobWise() {
+    if (shareCount >= MIN_SHARES_REQUIRED) {
+      // Optional: Clear the counter after claiming
+      // localStorage.removeItem('jobWiseShareCount');
+      window.location.href = TARGET_URL; // Redirect to job-wise.co.za
+    } else {
+      alert(
+        `You must share with at least ${MIN_SHARES_REQUIRED} friends first! You are currently at ${shareCount}.`
+      );
+    }
+  }
+
+  // Attach the redirect function to the claim button
+  claimButton.onclick = redirectToJobWise;
+
+  // Initial load
+  updateDisplay();
+</script>
