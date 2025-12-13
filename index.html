@@ -1,25 +1,24 @@
 <style>
   /* --- 1. MODAL/POPUP STYLES (NEW) --- */
-  /* Backdrop covers the whole screen and makes it dark/dim */
   .modal-backdrop {
-    display: none; /* Initially hidden */
+    display: none;
     position: fixed;
-    z-index: 1000; /* Ensure it's on top of everything */
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7); /* Black with 70% opacity */
-    /* Use flexbox to center the content */
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
+    /* Added padding to prevent the box from touching screen edges on mobile */
+    padding: 10px; 
   }
 
-  /* When the modal is open, this class is added to the backdrop */
   .modal-backdrop.open {
-    display: flex; /* Show the modal */
+    display: flex;
   }
 
   /* Close button styling */
@@ -27,35 +26,46 @@
     color: #aaaaaa;
     font-size: 28px;
     font-weight: bold;
-    position: absolute; /* Position relative to the #ticket-container */
+    position: absolute;
     top: 10px;
     right: 15px;
     cursor: pointer;
     transition: color 0.3s;
+    z-index: 1001; /* Ensure close button is above the container content */
   }
 
   .close-button:hover,
   .close-button:focus {
-    color: #da291c; /* South Africa Red for hover */
+    color: #da291c;
   }
 
-  /* --- 2. ORIGINAL TICKET CONTAINER STYLES (MODIFIED) --- */
+  /* --- 2. ORIGINAL TICKET CONTAINER STYLES (MODIFIED FOR MOBILE WIDTH/HEIGHT) --- */
   #ticket-container {
-    /* Changed position to relative so the close button can be absolute inside it */
     position: relative;
-    max-width: 600px;
-    margin: 0; /* Remove margin-auto because flexbox is centering it now */
+    /* Changed max-width to allow it to fill more of the mobile screen */
+    max-width: 400px; 
+    width: 95%; /* Ensures it takes up most of the available space */
+    margin: 0;
     padding: 20px;
-    border: 2px solid #00a3da; /* South Africa blue/sky blue */
+    border: 2px solid #00a3da;
     border-radius: 12px;
     background-color: #f7f9fc;
     text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Slightly stronger shadow for pop-up effect */
-    /* Add animation for entry */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     animation: fadeIn 0.3s ease-out;
   }
+  
+  /* --- MEDIA QUERY FOR OPTIMIZED MOBILE VIEW (Smartphones) --- */
+  @media (max-width: 480px) {
+    #ticket-container {
+      /* On very small screens, make it slightly wider and ensure a minimum height */
+      width: 95%; 
+      max-width: none; /* Let the 95% width rule take effect */
+      min-height: 300px; /* Ensures it's not too squashed */
+      padding: 15px;
+    }
+  }
 
-  /* Animation for the pop-up effect */
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -68,7 +78,6 @@
   }
 
   /* Mobile-first styling */
-  /* ... rest of your original CSS */
   .ticket-heading {
     color: #00a3da;
     font-size: 1.5em;
@@ -81,12 +90,13 @@
   }
   .counter-display {
     font-size: 2em;
-    color: #da291c; /* South Africa red */
+    color: #da291c;
     margin: 15px 0;
   }
   .share-button {
     display: block;
-    width: 90%;
+    /* Use 95% to leave a tiny gap on the sides for smaller screens */
+    width: 95%; 
     padding: 15px;
     margin: 10px auto;
     font-size: 1.1em;
@@ -96,18 +106,18 @@
     transition: background-color 0.3s;
   }
   #whatsapp-share {
-    background-color: #25d366; /* WhatsApp Green */
+    background-color: #25d366;
     color: white;
   }
   #whatsapp-share:hover {
     background-color: #1da851;
   }
   #claim-button {
-    background-color: #ffb612; /* Bafana Bafana Yellow/Gold */
+    background-color: #ffb612;
     color: #333;
     font-weight: bold;
-    opacity: 0.5; /* Disabled look */
-    pointer-events: none; /* Make it unclickable */
+    opacity: 0.5;
+    pointer-events: none;
   }
   #claim-button.active {
     opacity: 1;
@@ -121,7 +131,7 @@
     <span class="close-button" onclick="closeModal()">&times;</span>
 
     <h1 class="ticket-heading">WIN BAFANA BAFANA TICKETS!!</h1>
-    <p class="share-prompt">16/Dec/2026- Dobsonville Stadium <br /></p>
+    <p class="share-prompt">16Dec2026- Dobsonville Stadium <br /></p>
     <p class="share-prompt">
       Share this unique link with 5 friends via WhatsApp to qualify for the draw!
     </p>
@@ -144,7 +154,7 @@
 <button onclick="openModal()">Open Bafana Bafana Ticket Promo</button>
 
 <script>
-  // --- MODAL CONTROL FUNCTIONS (NEW) ---
+  // --- MODAL CONTROL FUNCTIONS ---
   const modal = document.getElementById("ticketModal");
 
   // Function to open the modal
@@ -164,7 +174,7 @@
     }
   };
 
-  // --- ORIGINAL SCRIPT (Updated to call close modal if successful) ---
+  // --- ORIGINAL SCRIPT ---
   const TARGET_URL = "https://job-wise.co.za/";
   const SHARE_MESSAGE =
     "I found a way to win FREE Bafana Bafana vs. Ghana tickets on 16 Dec! You also need to check out this : " +
@@ -211,7 +221,6 @@
 
   function redirectToJobWise() {
     if (shareCount >= MIN_SHARES_REQUIRED) {
-      // **NEW**: Close the modal before redirecting
       closeModal();
       window.location.href = TARGET_URL;
     } else {
