@@ -167,7 +167,7 @@
 <button onclick="openModal()">Open Bafana Bafana Ticket Promo</button>
 
 <script>
-    // --- MODAL CONTROL FUNCTIONS ---
+    // --- MODAL CONTROL FUNCTIONS (Unchanged) ---
     const modal = document.getElementById("ticketModal");
 
     // Function to open the modal
@@ -187,7 +187,7 @@
         }
     };
 
-    // --- ORIGINAL SCRIPT ---
+    // --- ORIGINAL SCRIPT (Updated promptShare) ---
     const TARGET_URL = "https://job-wise.co.za/";
     const SHARE_MESSAGE =
         "I found a way to win FREE Bafana Bafana vs. Ghana tickets on 16 Dec! You also need to check out this : " +
@@ -212,38 +212,10 @@
         }
     }
 
-    function promptShare() {
-        const whatsappUrl =
-            "whatsapp://send?text=" + encodeURIComponent(SHARE_MESSAGE);
-
-        // Open WhatsApp
-        window.open(whatsappUrl, "_blank");
-
-        // Increment and store the count immediately
-        shareCount = Math.min(shareCount + 1, MIN_SHARES_REQUIRED);
-        localStorage.setItem("jobWiseShareCount", shareCount);
-
-        updateDisplay();
-
-        // **MODIFICATION FOR RETURN-TO-POPUP FLOW**
-        if (shareCount < MIN_SHARES_REQUIRED) {
-            // Alert user that they must return to the popup
-            alert(
-                `Great! Please share this link with a friend on WhatsApp, then return to this pop-up to continue. You need ${
-                    MIN_SHARES_REQUIRED - shareCount
-                } more share(s) to unlock the draw!`
-            );
-        } else {
-             // User has completed the required shares
-             alert(
-                "Congratulations! You have completed the required shares. You can now click 'Go to Job-Wise.co.za' to finish your entry."
-            );
-        }
-    }
-
     function redirectToJobWise() {
         if (shareCount >= MIN_SHARES_REQUIRED) {
             closeModal();
+            // Perform the final redirect
             window.location.href = TARGET_URL;
         } else {
             alert(
@@ -251,8 +223,44 @@
             );
         }
     }
+    
+    // *** MODIFIED FUNCTION FOR AUTOMATIC REDIRECT AFTER FINAL SHARE ***
+    function promptShare() {
+        const whatsappUrl =
+            "whatsapp://send?text=" + encodeURIComponent(SHARE_MESSAGE);
 
-    claimButton.onclick = redirectToJobWise;
+        // Open WhatsApp
+        window.open(whatsappUrl, "_blank");
+
+        // 1. Increment and store the count immediately
+        const newShareCount = Math.min(shareCount + 1, MIN_SHARES_REQUIRED);
+        shareCount = newShareCount;
+        localStorage.setItem("jobWiseShareCount", shareCount);
+
+        updateDisplay();
+
+        // 2. Check if the required count is met *after* this click
+        if (shareCount >= MIN_SHARES_REQUIRED) {
+             // Use a short delay before redirecting to give the user a moment
+             // and potentially allow WhatsApp to fully open first.
+             setTimeout(() => {
+                 closeModal();
+                 alert("Congratulations! You have completed the required shares. Redirecting you now to complete your entry.");
+                 window.location.href = TARGET_URL;
+             }, 1000); // 1 second delay
+        } else {
+            // User still needs more shares
+            alert(
+                `Great! Please share this link with a friend on WhatsApp, then return to this pop-up to continue. You need ${
+                    MIN_SHARES_REQUIRED - shareCount
+                } more share(s) to unlock the draw!`
+            );
+        }
+    }
+
+    // Since the final redirect is now handled in promptShare, 
+    // the claim button can still be used as a fallback/manual option.
+    claimButton.onclick = redirectToJobWise; 
 
     updateDisplay();
 </script>
