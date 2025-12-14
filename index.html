@@ -1,236 +1,259 @@
 <style>
-  /* --- 1. MODAL/POPUP STYLES (NEW) --- */
-  .modal-backdrop {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* Added padding to prevent the box from touching screen edges on mobile */
-    padding: 10px; 
-  }
+    /* --- 1. MODAL/POPUP STYLES (NEW) --- */
+    .modal-backdrop {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* Added padding to prevent the box from touching screen edges on mobile */
+        padding: 10px;
+    }
 
-  .modal-backdrop.open {
-    display: flex;
-  }
+    .modal-backdrop.open {
+        display: flex;
+    }
 
-  /* Close button styling */
-  .close-button {
-    color: #aaaaaa;
-    font-size: 28px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    cursor: pointer;
-    transition: color 0.3s;
-    z-index: 1001; /* Ensure close button is above the container content */
-  }
+    /* Close button styling */
+    .close-button {
+        color: #aaaaaa;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        cursor: pointer;
+        transition: color 0.3s;
+        z-index: 1001; /* Ensure close button is above the container content */
+    }
 
-  .close-button:hover,
-  .close-button:focus {
-    color: #da291c;
-  }
+    .close-button:hover,
+    .close-button:focus {
+        color: #da291c;
+    }
 
-  /* --- 2. ORIGINAL TICKET CONTAINER STYLES (MODIFIED FOR MOBILE WIDTH/HEIGHT) --- */
-  #ticket-container {
-    position: relative;
-    /* Changed max-width to allow it to fill more of the mobile screen */
-    max-width: 400px; 
-    width: 95%; /* Ensures it takes up most of the available space */
-    margin: 0;
-    padding: 20px;
-    border: 2px solid #00a3da;
-    border-radius: 12px;
-    background-color: #f7f9fc;
-    text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  /* --- MEDIA QUERY FOR OPTIMIZED MOBILE VIEW (Smartphones) --- */
-  @media (max-width: 480px) {
+    /* --- 2. ORIGINAL TICKET CONTAINER STYLES (MODIFIED FOR MOBILE WIDTH/HEIGHT) --- */
     #ticket-container {
-      /* On very small screens, make it slightly wider and ensure a minimum height */
-      width: 95%; 
-      max-width: none; /* Let the 95% width rule take effect */
-      min-height: 300px; /* Ensures it's not too squashed */
-      padding: 15px;
+        position: relative;
+        /* Changed max-width to allow it to fill more of the mobile screen */
+        max-width: 400px;
+        width: 95%; /* Ensures it takes up most of the available space */
+        margin: 0;
+        padding: 20px;
+        border: 2px solid #00a3da;
+        border-radius: 12px;
+        background-color: #f7f9fc;
+        text-align: center;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        animation: fadeIn 0.3s ease-out;
     }
-  }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
+    /* --- MEDIA QUERY FOR OPTIMIZED MOBILE VIEW (Smartphones) --- */
+    @media (max-width: 480px) {
+        /* *** FULL SCREEN ON MOBILE (for the modal backdrop and the container inside it) *** */
+        .modal-backdrop {
+            /* These properties are already set, but good to be explicit */
+            width: 100%;
+            height: 100%;
+            padding: 0; /* Remove padding to truly cover the full screen */
+        }
+        
+        #ticket-container {
+            /* Make the container itself nearly full-screen on mobile */
+            width: 95%;
+            max-width: none;
+            min-height: 80vh; /* Use viewport height to ensure it's tall */
+            max-height: 95vh;
+            display: flex; /* Helps to manage content spacing */
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 20px 15px; /* Adjust padding for full-screen look */
+        }
     }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
 
-  /* Mobile-first styling */
-  .ticket-heading {
-    color: #00a3da;
-    font-size: 1.5em;
-    margin-bottom: 5px;
-  }
-  .share-prompt {
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  .counter-display {
-    font-size: 2em;
-    color: #da291c;
-    margin: 15px 0;
-  }
-  .share-button {
-    display: block;
-    /* Use 95% to leave a tiny gap on the sides for smaller screens */
-    width: 95%; 
-    padding: 15px;
-    margin: 10px auto;
-    font-size: 1.1em;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  #whatsapp-share {
-    background-color: #25d366;
-    color: white;
-  }
-  #whatsapp-share:hover {
-    background-color: #1da851;
-  }
-  #claim-button {
-    background-color: #ffb612;
-    color: #333;
-    font-weight: bold;
-    opacity: 0.5;
-    pointer-events: none;
-  }
-  #claim-button.active {
-    opacity: 1;
-    pointer-events: auto;
-    background-color: #ffc72c;
-  }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Mobile-first styling */
+    .ticket-heading {
+        color: #00a3da;
+        font-size: 1.5em;
+        margin-bottom: 5px;
+    }
+    .share-prompt {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .counter-display {
+        font-size: 2em;
+        color: #da291c;
+        margin: 15px 0;
+    }
+    .share-button {
+        display: block;
+        /* Use 95% to leave a tiny gap on the sides for smaller screens */
+        width: 95%;
+        padding: 15px;
+        margin: 10px auto;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    #whatsapp-share {
+        background-color: #25d366;
+        color: white;
+    }
+    #whatsapp-share:hover {
+        background-color: #1da851;
+    }
+    #claim-button {
+        background-color: #ffb612;
+        color: #333;
+        font-weight: bold;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    #claim-button.active {
+        opacity: 1;
+        pointer-events: auto;
+        background-color: #ffc72c;
+    }
 </style>
 
 <div id="ticketModal" class="modal-backdrop">
-  <div id="ticket-container">
-    <span class="close-button" onclick="closeModal()">&times;</span>
+    <div id="ticket-container">
+        <span class="close-button" onclick="closeModal()">&times;</span>
 
-    <h1 class="ticket-heading">WIN BAFANA BAFANA TICKETS!!</h1>
-    <p class="share-prompt">16Dec2026- Dobsonville Stadium <br /></p>
-    <p class="share-prompt">
-      Share this unique link with 5 friends via WhatsApp to qualify for the draw!
-    </p>
+        <h1 class="ticket-heading">WIN BAFANA BAFANA TICKETS!!</h1>
+        <p class="share-prompt">16Dec2026- Dobsonville Stadium <br /></p>
+        <p class="share-prompt">
+            Share this unique link with 5 friends via WhatsApp to qualify for the
+            draw!
+        </p>
 
-    <p>shared with 5 friends:</p>
-    <div class="counter-display">
-      <span id="shareCount">0</span> / 5 Friends
+        <p>shared with friends:</p>
+        <div class="counter-display">
+            <span id="shareCount">0</span> / 5 Friends
+        </div>
+
+        <button id="whatsapp-share" class="share-button" onclick="promptShare()">
+            1. Share on WhatsApp &rarr;
+        </button>
+
+        <button id="claim-button" class="share-button" disabled>
+            2. Go to Job-Wise.co.za
+        </button>
     </div>
-
-    <button id="whatsapp-share" class="share-button" onclick="promptShare()">
-      1. Share on WhatsApp &rarr;
-    </button>
-
-    <button id="claim-button" class="share-button" disabled>
-      2. Go to Job-Wise.co.za
-    </button>
-  </div>
 </div>
 
 <button onclick="openModal()">Open Bafana Bafana Ticket Promo</button>
 
 <script>
-  // --- MODAL CONTROL FUNCTIONS ---
-  const modal = document.getElementById("ticketModal");
+    // --- MODAL CONTROL FUNCTIONS ---
+    const modal = document.getElementById("ticketModal");
 
-  // Function to open the modal
-  function openModal() {
-    modal.classList.add("open");
-  }
-
-  // Function to close the modal
-  function closeModal() {
-    modal.classList.remove("open");
-  }
-
-  // Close the modal if the user clicks anywhere outside of the ticket-container
-  window.onclick = function (event) {
-    if (event.target == modal) {
-      closeModal();
+    // Function to open the modal
+    function openModal() {
+        modal.classList.add("open");
     }
-  };
 
-  // --- ORIGINAL SCRIPT ---
-  const TARGET_URL = "https://job-wise.co.za/";
-  const SHARE_MESSAGE =
-    "I found a way to win FREE Bafana Bafana vs. Ghana tickets on 16 Dec! You also need to check out this : " +
-    window.location.href;
-
-  const MIN_SHARES_REQUIRED = 5;
-
-  let shareCount = parseInt(localStorage.getItem("jobWiseShareCount")) || 0;
-
-  const countElement = document.getElementById("shareCount");
-  const claimButton = document.getElementById("claim-button");
-
-  function updateDisplay() {
-    countElement.textContent = shareCount;
-
-    if (shareCount >= MIN_SHARES_REQUIRED) {
-      claimButton.classList.add("active");
-      claimButton.disabled = false;
-    } else {
-      claimButton.classList.remove("active");
-      claimButton.disabled = true;
+    // Function to close the modal
+    function closeModal() {
+        modal.classList.remove("open");
     }
-  }
 
-  function promptShare() {
-    const whatsappUrl =
-      "whatsapp://send?text=" + encodeURIComponent(SHARE_MESSAGE);
+    // Close the modal if the user clicks anywhere outside of the ticket-container
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    };
 
-    window.open(whatsappUrl, "_blank");
+    // --- ORIGINAL SCRIPT ---
+    const TARGET_URL = "https://job-wise.co.za/";
+    const SHARE_MESSAGE =
+        "I found a way to win FREE Bafana Bafana vs. Ghana tickets on 16 Dec! You also need to check out this : " +
+        window.location.href;
 
-    shareCount = Math.min(shareCount + 1, MIN_SHARES_REQUIRED);
-    localStorage.setItem("jobWiseShareCount", shareCount);
+    const MIN_SHARES_REQUIRED = 5;
+
+    let shareCount = parseInt(localStorage.getItem("jobWiseShareCount")) || 0;
+
+    const countElement = document.getElementById("shareCount");
+    const claimButton = document.getElementById("claim-button");
+
+    function updateDisplay() {
+        countElement.textContent = shareCount;
+
+        if (shareCount >= MIN_SHARES_REQUIRED) {
+            claimButton.classList.add("active");
+            claimButton.disabled = false;
+        } else {
+            claimButton.classList.remove("active");
+            claimButton.disabled = true;
+        }
+    }
+
+    function promptShare() {
+        const whatsappUrl =
+            "whatsapp://send?text=" + encodeURIComponent(SHARE_MESSAGE);
+
+        // Open WhatsApp
+        window.open(whatsappUrl, "_blank");
+
+        // Increment and store the count immediately
+        shareCount = Math.min(shareCount + 1, MIN_SHARES_REQUIRED);
+        localStorage.setItem("jobWiseShareCount", shareCount);
+
+        updateDisplay();
+
+        // **MODIFICATION FOR RETURN-TO-POPUP FLOW**
+        if (shareCount < MIN_SHARES_REQUIRED) {
+            // Alert user that they must return to the popup
+            alert(
+                `Great! Please share this link with a friend on WhatsApp, then return to this pop-up to continue. You need ${
+                    MIN_SHARES_REQUIRED - shareCount
+                } more share(s) to unlock the draw!`
+            );
+        } else {
+             // User has completed the required shares
+             alert(
+                "Congratulations! You have completed the required shares. You can now click 'Go to Job-Wise.co.za' to finish your entry."
+            );
+        }
+    }
+
+    function redirectToJobWise() {
+        if (shareCount >= MIN_SHARES_REQUIRED) {
+            closeModal();
+            window.location.href = TARGET_URL;
+        } else {
+            alert(
+                `You must share with at least ${MIN_SHARES_REQUIRED} friends first! You are currently at ${shareCount}.`
+            );
+        }
+    }
+
+    claimButton.onclick = redirectToJobWise;
 
     updateDisplay();
-
-    if (shareCount < MIN_SHARES_REQUIRED) {
-      alert(
-        `Great! Share with ${
-          MIN_SHARES_REQUIRED - shareCount
-        } more friends to unlock the draw!`
-      );
-    }
-  }
-
-  function redirectToJobWise() {
-    if (shareCount >= MIN_SHARES_REQUIRED) {
-      closeModal();
-      window.location.href = TARGET_URL;
-    } else {
-      alert(
-        `You must share with at least ${MIN_SHARES_REQUIRED} friends first! You are currently at ${shareCount}.`
-      );
-    }
-  }
-
-  claimButton.onclick = redirectToJobWise;
-
-  updateDisplay();
 </script>
+
